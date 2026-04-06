@@ -3,7 +3,6 @@ import axios from "axios";
 import "./StoryCreate.css";
 
 const StoryCreate = ({ onClose, onStoryCreated }) => {
-
   // TEXT DATA
   const [formData, setFormData] = useState({
     title: "",
@@ -13,14 +12,61 @@ const StoryCreate = ({ onClose, onStoryCreated }) => {
     writerId: "",
     audioEnLength: "",
     audioBnLength: "",
-    isPublished: true
+    isPublished: true,
+    tags: [],
+    category: "",
   });
+
+  // Suggested categories (Subjects)
+  const categories = [
+    "Moral Story",
+    "Adventure",
+    "Love & Romance",
+    "Motivational",
+    "Sad & Emotional",
+    "Comedy",
+    "Fantasy",
+    "Educational",
+    "Horror",
+    "Islamic/Moral",
+    "Folktale",
+    "Science Fiction",
+    "Others",
+  ];
+
+  // Popular Tags (Admin can select multiple)
+  const suggestedTags = [
+    "love",
+    "sad",
+    "motivational",
+    "emotional",
+    "inspirational",
+    "family",
+    "friendship",
+    "bravery",
+    "honesty",
+    "kindness",
+    "adventure",
+    "romance",
+    "tragedy",
+    "happiness",
+    "success",
+    "life lesson",
+    "children",
+    "teen",
+    "heartbreaking",
+    "uplifting",
+    "short story",
+    "long story",
+    "moral",
+    "folklore",
+  ];
 
   // FILE DATA
   const [files, setFiles] = useState({
     image: null,
     audioEn: null,
-    audioBn: null
+    audioBn: null,
   });
 
   const [loading, setLoading] = useState(false);
@@ -31,7 +77,7 @@ const StoryCreate = ({ onClose, onStoryCreated }) => {
 
     setFormData((prev) => ({
       ...prev,
-      [name]: type === "checkbox" ? checked : value
+      [name]: type === "checkbox" ? checked : value,
     }));
   };
 
@@ -41,7 +87,7 @@ const StoryCreate = ({ onClose, onStoryCreated }) => {
 
     setFiles((prev) => ({
       ...prev,
-      [name]: selectedFiles[0]
+      [name]: selectedFiles[0],
     }));
   };
 
@@ -55,6 +101,8 @@ const StoryCreate = ({ onClose, onStoryCreated }) => {
 
       // TEXT
       data.append("title", formData.title);
+      data.append("category", formData.category);
+      formData.tags.forEach((tag) => data.append("tags[]", tag)); // Multiple tags
       data.append("englishText", formData.englishText);
       data.append("banglaText", formData.banglaText);
       data.append("writerName", formData.writerName);
@@ -68,18 +116,18 @@ const StoryCreate = ({ onClose, onStoryCreated }) => {
       if (files.audioEn) data.append("audioEn", files.audioEn);
       if (files.audioBn) data.append("audioBn", files.audioBn);
 
-      const res = await axios.post("http://localhost:5000/api/stories/create",
+      const res = await axios.post(
+        "http://localhost:5000/api/stories/create",
         data,
         {
           headers: {
-            "Content-Type": "multipart/form-data"
-          }
-        }
+            "Content-Type": "multipart/form-data",
+          },
+        },
       );
 
       onStoryCreated(res.data.data);
       onClose();
-
     } catch (error) {
       console.error(error);
       alert("Upload failed");
@@ -88,10 +136,10 @@ const StoryCreate = ({ onClose, onStoryCreated }) => {
     }
   };
 
+
   return (
     <div className="popup-overlay" onClick={onClose}>
       <div className="popup-container" onClick={(e) => e.stopPropagation()}>
-
         {/* HEADER */}
         <div className="popup-header">
           <h2>Create Story</h2>
@@ -99,7 +147,6 @@ const StoryCreate = ({ onClose, onStoryCreated }) => {
         </div>
 
         <form onSubmit={handleSubmit} className="popup-form">
-
           {/* BASIC INFO */}
           <div className="section">
             <h3>Basic Info</h3>
@@ -121,14 +168,51 @@ const StoryCreate = ({ onClose, onStoryCreated }) => {
               onChange={handleChange}
               required
             />
-
-            <input
-              type="text"
-              name="writerId"
-              placeholder="Writer User ID (optional)"
-              value={formData.writerId}
+            {/* Category Dropdown */}
+            <select
+              name="category"
+              value={formData.category}
               onChange={handleChange}
-            />
+            >
+              <option value="">Select Category</option>
+              {categories.map((category) => (
+                <option key={category} value={category}>
+                  {category}
+                </option>
+              ))}
+            </select>
+          </div>
+
+            {/* Tags Section - Improved */}
+          <div className="section">
+            <h3>Tags</h3>
+            <div className="tags-container">
+              {suggestedTags.map((tag) => (
+                <label key={tag} className="tag-label">
+                  <input
+                    type="checkbox"
+                    name="tags"
+                    value={tag}
+                    checked={formData.tags?.includes(tag) || false}
+                    onChange={(e) => {
+                      const { checked, value } = e.target;
+                      setFormData((prev) => {
+                        const currentTags = prev.tags || [];
+                        if (checked) {
+                          return { ...prev, tags: [...currentTags, value] };
+                        } else {
+                          return {
+                            ...prev,
+                            tags: currentTags.filter((t) => t !== value),
+                          };
+                        }
+                      });
+                    }}
+                  />
+                  {tag}
+                </label>
+              ))}
+            </div>
           </div>
 
           {/* STORY TEXT */}
@@ -141,7 +225,7 @@ const StoryCreate = ({ onClose, onStoryCreated }) => {
               onChange={(e) =>
                 setFormData((prev) => ({
                   ...prev,
-                  englishText: e.target.value
+                  englishText: e.target.value,
                 }))
               }
             />
@@ -152,7 +236,7 @@ const StoryCreate = ({ onClose, onStoryCreated }) => {
               onChange={(e) =>
                 setFormData((prev) => ({
                   ...prev,
-                  banglaText: e.target.value
+                  banglaText: e.target.value,
                 }))
               }
               required
@@ -210,7 +294,6 @@ const StoryCreate = ({ onClose, onStoryCreated }) => {
               {loading ? "Creating..." : "Create Story"}
             </button>
           </div>
-
         </form>
       </div>
     </div>

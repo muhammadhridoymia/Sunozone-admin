@@ -2,7 +2,7 @@ import React from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import Layout from './components/Layout/Layout';
 import AllStories from './pages/AllStories';
-import TopStories from './pages/TopStories';
+import Lines from './pages/Lines';
 import ThisWeekStories from './pages/ThisWeekStories';
 import MonthStories from './pages/MonthStories';
 import YearsBestStories from './pages/YearsBestStories';
@@ -16,7 +16,7 @@ function App() {
       <Layout>
         <Routes>
           <Route path="/" element={<AllStories />} />
-          <Route path="/top-stories" element={<TopStories />} />
+          <Route path="/lines" element={<Lines />} />
           <Route path="/this-week" element={<ThisWeekStories />} />
           <Route path="/this-month" element={<MonthStories />} />
           <Route path="/years-best" element={<YearsBestStories />} />

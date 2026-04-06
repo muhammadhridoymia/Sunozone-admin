@@ -22,7 +22,7 @@ const Sidebar = () => {
 
   const menuItems = [
     { path: '/', name: 'All Stories', icon: <FaHome /> },
-    { path: '/top-stories', name: 'Top Stories', icon: <FaStar /> },
+    { path: '/lines', name: 'Lines', icon: <FaStar /> },
     { path: '/this-week', name: 'This Week', icon: <FaCalendarWeek /> },
     { path: '/this-month', name: 'This Month', icon: <FaCalendarAlt /> },
     { path: '/years-best', name: "Year's Best", icon: <FaTrophy /> },
