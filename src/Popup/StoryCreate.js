@@ -8,10 +8,12 @@ const StoryCreate = ({ onClose, onStoryCreated }) => {
     title: "",
     englishText: "",
     banglaText: "",
+    arabicText: "",
     writerName: "",
     writerId: "",
     audioEnLength: "",
     audioBnLength: "",
+    audioArLength: "",
     isPublished: true,
     tags: [],
     category: "",
@@ -67,6 +69,7 @@ const StoryCreate = ({ onClose, onStoryCreated }) => {
     image: null,
     audioEn: null,
     audioBn: null,
+    audioAr: null,
   });
 
   const [loading, setLoading] = useState(false);
@@ -105,16 +108,19 @@ const StoryCreate = ({ onClose, onStoryCreated }) => {
       formData.tags.forEach((tag) => data.append("tags[]", tag)); // Multiple tags
       data.append("englishText", formData.englishText);
       data.append("banglaText", formData.banglaText);
+      data.append("arabicText", formData.arabicText);
       data.append("writerName", formData.writerName);
       data.append("writerId", formData.writerId);
       data.append("audioEnLength", formData.audioEnLength);
       data.append("audioBnLength", formData.audioBnLength);
+      data.append("audioArLength", formData.audioArLength);
       data.append("isPublished", formData.isPublished);
 
       // FILES
       if (files.image) data.append("image", files.image);
       if (files.audioEn) data.append("audioEn", files.audioEn);
       if (files.audioBn) data.append("audioBn", files.audioBn);
+      if (files.audioAr) data.append("audioAr", files.audioAr);
 
       const res = await axios.post(
         "http://localhost:5000/api/stories/create",
@@ -241,7 +247,19 @@ const StoryCreate = ({ onClose, onStoryCreated }) => {
               }
               required
             />
+
+            <textarea
+              placeholder="اكتب القصة بالعربية"
+              value={formData.arabicText}
+              onChange={(e) =>
+                setFormData((prev) => ({
+                  ...prev,
+                  arabicText: e.target.value,
+                }))
+              }
+            />
           </div>
+
 
           {/* MEDIA */}
           <div className="section">
@@ -267,6 +285,16 @@ const StoryCreate = ({ onClose, onStoryCreated }) => {
               name="audioBnLength"
               placeholder="Length (seconds)"
               value={formData.audioBnLength}
+              onChange={handleChange}
+            />
+
+            <label>Arabic Audio</label>
+            <input type="file" name="audioAr" onChange={handleFileChange} />
+            <input
+              type="number"
+              name="audioArLength"
+              placeholder="Length (seconds)"
+              value={formData.audioArLength}
               onChange={handleChange}
             />
           </div>
